@@ -2,9 +2,11 @@ package com.sugar.care.services;
 
 import com.sugar.care.entities.User;
 import com.sugar.care.entities.UserDailyUpdate;
+import com.sugar.care.enums.AlertColour;
 import com.sugar.care.exceptions.ResourceNotFoundException;
-import com.sugar.care.repos.DailyUpdatesRepository;
-import com.sugar.care.repos.UserRepository;
+import com.sugar.care.repositories.AccountRepository;
+import com.sugar.care.repositories.DailyUpdatesRepository;
+import com.sugar.care.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,9 @@ public class DailyUpdatesService {
     @Autowired
     private UserRepository userRepo;
 
+    @Autowired
+    private AccountRepository accountRepo;
+
     public List<UserDailyUpdate> getUpdatesByUserId(long user_id, int number_of_days) {
         LocalDate startDate = LocalDate.now().minusDays(number_of_days);
         LocalDate endDate = LocalDate.now();
@@ -38,6 +43,7 @@ public class DailyUpdatesService {
         //else create
         User user = userRepo.getOne(user_id);
         newRecord.setUser(user);
+        newRecord.setColourStatus(getColourBasedOnReadingsForDailyUpdates(newRecord));
         return dailyUpdatesRepo.save(newRecord);
     }
 
@@ -57,11 +63,37 @@ public class DailyUpdatesService {
         //else update it
         UserDailyUpdate existingRecord = dailyUpdatesRepo.getRecordByRecordDate(user_id, updateRecord.getRecordDate()).get(0);
         existingRecord.setHB1ACvalue(updateRecord.getHB1ACvalue());
-        existingRecord.setReadingTakenAfterMeal(updateRecord.isReadingTakenAfterMeal());
+        existingRecord.setReadingTakenAfterMeal(updateRecord.getIsReadingTakenAfterMeal());
         existingRecord.setSugarReadingValue(updateRecord.getSugarReadingValue());
         existingRecord.setHB1ACvalue(updateRecord.getHB1ACvalue());
         existingRecord.setRecordDate(updateRecord.getRecordDate());
+        existingRecord.setColourStatus(getColourBasedOnReadingsForDailyUpdates(updateRecord));
         return dailyUpdatesRepo.save(existingRecord);
     }
+
+    private AlertColour getColourBasedOnReadingsForDailyUpdates(UserDailyUpdate dailyRecord) {
+        boolean fasting = dailyRecord.getIsReadingTakenAfterMeal();
+        int sugarReading = dailyRecord.getSugarReadingValue();
+        AlertColour result = AlertColour.GREEN;
+        if (fasting) {
+            if (sugarReading < 100) {
+                result = AlertColour.GREEN;
+            } else if (sugarReading >= 100 && sugarReading <= 125) {
+                result = AlertColour.AMBER;
+            } else if (sugarReading > 125) {
+                result = AlertColour.RED;
+            }
+        } else {
+            if (sugarReading < 140) {
+                result = AlertColour.GREEN;
+            } else if (sugarReading >= 140 && sugarReading <= 200) {
+                result = AlertColour.AMBER;
+            } else if (sugarReading > 200) {
+                result = AlertColour.RED;
+            }
+        }
+        return result;
+    }
+
 
 }

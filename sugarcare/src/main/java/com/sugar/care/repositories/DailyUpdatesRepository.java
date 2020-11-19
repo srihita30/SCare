@@ -1,4 +1,4 @@
-package com.sugar.care.repos;
+package com.sugar.care.repositories;
 
 import com.sugar.care.entities.User;
 import com.sugar.care.entities.UserDailyUpdate;

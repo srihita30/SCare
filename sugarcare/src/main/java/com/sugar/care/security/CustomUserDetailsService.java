@@ -1,7 +1,7 @@
 package com.sugar.care.security;
 
 import com.sugar.care.entities.User;
-import com.sugar.care.repos.UserRepository;
+import com.sugar.care.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

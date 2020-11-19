@@ -4,7 +4,7 @@ import com.sugar.care.entities.User;
 import com.sugar.care.entities.UserAccount;
 import com.sugar.care.exceptions.ResourceAlreadyExistsException;
 import com.sugar.care.exceptions.ResourceNotFoundException;
-import com.sugar.care.repos.UserRepository;
+import com.sugar.care.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class UserService {
         User newUser;
         Optional<User> userOptional = userRepo.findByPhoneNumber(user.getPhoneNumber());
         if (userOptional.isPresent()) {
-            throw new ResourceAlreadyExistsException("user with phoneNumber-" + user.getPhoneNumber() + " exists");
+            throw new ResourceAlreadyExistsException("user with phoneNumber-" + user.getPhoneNumber() + " does not exists");
         } else {
             //One-to-One bidirectional mapping
             UserAccount account = new UserAccount();
@@ -56,6 +56,14 @@ public class UserService {
         } else {
             userRepo.deleteById(id);
         }
+    }
+
+    public User findByPhoneNumber(String phone){
+        Optional<User> optionalUser = userRepo.findByPhoneNumber(phone);
+        if(optionalUser.isEmpty()){
+            throw new ResourceNotFoundException("user with phoneNumber-" + phone + " does not exists");
+        }
+        return optionalUser.get();
     }
 
 }

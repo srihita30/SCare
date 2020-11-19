@@ -2,9 +2,15 @@ package com.sugar.care.controllers;
 
 import com.sugar.care.entities.User;
 import com.sugar.care.exceptions.ResourceNotFoundException;
+import com.sugar.care.security.CustomUserDetails;
+import com.sugar.care.security.utility.JwtTokenProvider;
 import com.sugar.care.services.UserService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -12,12 +18,27 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sugar.care.constants.SecurityConstants.JWT_TOKEN_HEADER;
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequestMapping(value = "/user")
+@Api(produces = "application/json", value = "Deals with user related work")
 public class UserResourcesController {
 
-    @Autowired
+
     private UserService userService;
+
+    private AuthenticationManager authenticationManager;
+
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    public UserResourcesController(AuthenticationManager authenticationManager, UserService userService, JwtTokenProvider jwtTokenProvider) {
+        this.authenticationManager = authenticationManager;
+        this.userService = userService;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     @GetMapping(value = "/users")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -35,13 +56,22 @@ public class UserResourcesController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping(value = "/register")
     public ResponseEntity<Object> createUser(@RequestBody User user) {
         User newUser = userService.createUser(user);
         URI uriLocation = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{id}")
                 .build(newUser.getId());
         return ResponseEntity.created(uriLocation).build();
+    }
+
+    @PostMapping(value = "/login")
+    public ResponseEntity<Object> login(@RequestBody User user){
+        authenticate(user.getPhoneNumber(), user.getPassword());
+        User loginUser = userService.findByPhoneNumber(user.getPhoneNumber());
+        CustomUserDetails userPrincipal = new CustomUserDetails(loginUser);
+        HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
+        return new ResponseEntity<>(loginUser, jwtHeader, OK);
     }
 
     @PutMapping(value = "/users/{id}")
@@ -53,5 +83,15 @@ public class UserResourcesController {
     @DeleteMapping(value = "/users/{id}")
     public void deleteUser(@PathVariable long id) {
         userService.deleteUser(id);
+    }
+
+    private void authenticate(String username, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    }
+
+    private HttpHeaders getJwtHeader(CustomUserDetails user) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
+        return headers;
     }
 }

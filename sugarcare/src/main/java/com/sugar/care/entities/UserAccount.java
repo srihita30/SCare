@@ -2,6 +2,7 @@ package com.sugar.care.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sugar.care.enums.DiabeticState;
 import com.sugar.care.enums.Gender;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,7 +16,7 @@ import java.util.Date;
 @Entity
 @Table(name = "userProfiles")
 @EntityListeners(AuditingEntityListener.class) //to enable jpa auditing
-@JsonIgnoreProperties(value = {"creationDate", "updateDate"},
+@JsonIgnoreProperties(value = {"creationDate", "updateDate" , "shouldConsultDoctor"},
         allowGetters = true)
 public class UserAccount implements Serializable {
 
@@ -44,10 +45,14 @@ public class UserAccount implements Serializable {
 
     private boolean isCardiacSurgeryDone;
 
-    private int sugarLevel;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(255) default 'NORMAL'")
+    private DiabeticState diabeticStage;
 
     @Temporal(TemporalType.DATE)
     private Date yearDetected;
+
+    private boolean shouldConsultDoctor;
 
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,10 +70,6 @@ public class UserAccount implements Serializable {
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public User getUser() {
@@ -135,12 +136,12 @@ public class UserAccount implements Serializable {
         isCardiacSurgeryDone = cardiacSurgeryDone;
     }
 
-    public int getSugarLevel() {
-        return sugarLevel;
+    public DiabeticState getDiabeticStage() {
+        return diabeticStage;
     }
 
-    public void setSugarLevel(int sugarLevel) {
-        this.sugarLevel = sugarLevel;
+    public void setDiabeticStage(DiabeticState diabeticStage) {
+        this.diabeticStage = diabeticStage;
     }
 
     public Date getYearDetected() {
@@ -165,5 +166,13 @@ public class UserAccount implements Serializable {
 
     public void setUpdateDate(Date updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public boolean isShouldConsultDoctor() {
+        return shouldConsultDoctor;
+    }
+
+    public void setShouldConsultDoctor(boolean shouldConsultDoctor) {
+        this.shouldConsultDoctor = shouldConsultDoctor;
     }
 }

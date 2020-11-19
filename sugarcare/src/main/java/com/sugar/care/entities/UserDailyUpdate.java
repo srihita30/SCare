@@ -2,6 +2,7 @@ package com.sugar.care.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sugar.care.enums.AlertColour;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,8 +17,7 @@ import java.util.Date;
 @Entity
 @Table(name = "userDailyUpdates")
 @EntityListeners(AuditingEntityListener.class) //to enable jpa auditing
-@JsonIgnoreProperties(value = {"creationDate", "updateDate"},
-        allowGetters = true)
+@JsonIgnoreProperties(value = {"creationDate", "updateDate" ,"colourStatus"}, allowGetters = true)
 public class UserDailyUpdate implements Serializable {
 
     @Id
@@ -34,6 +34,9 @@ public class UserDailyUpdate implements Serializable {
     private boolean isReadingTakenAfterMeal;
 
     private int sugarReadingValue;
+
+    @Enumerated(EnumType.STRING)
+    private AlertColour colourStatus;
 
     @Column(name = "HB1AC_value")
     private int HB1ACvalue;
@@ -71,7 +74,7 @@ public class UserDailyUpdate implements Serializable {
         this.user = user;
     }
 
-    public boolean isReadingTakenAfterMeal() {
+    public boolean getIsReadingTakenAfterMeal() {
         return isReadingTakenAfterMeal;
     }
 
@@ -117,6 +120,15 @@ public class UserDailyUpdate implements Serializable {
 
     public void setRecordDate(LocalDate recordDate) {
         this.recordDate = recordDate;
+    }
+
+
+    public AlertColour getColourStatus() {
+        return colourStatus;
+    }
+
+    public void setColourStatus(AlertColour colourStatus) {
+        this.colourStatus = colourStatus;
     }
 
 }
