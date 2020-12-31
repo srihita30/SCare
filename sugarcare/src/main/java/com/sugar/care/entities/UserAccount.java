@@ -37,7 +37,9 @@ public class UserAccount implements Serializable {
 
     private int weight;
 
-    private int height;
+    private int heightInFeet;
+
+    private int heightInInches;
 
     private boolean hasHyperTension;
 
@@ -59,7 +61,7 @@ public class UserAccount implements Serializable {
     @CreatedDate
     private Date creationDate;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = true)
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updateDate;
@@ -92,6 +94,22 @@ public class UserAccount implements Serializable {
         return gender;
     }
 
+    public int getHeightInFeet() {
+        return heightInFeet;
+    }
+
+    public void setHeightInFeet(int heightInFeet) {
+        this.heightInFeet = heightInFeet;
+    }
+
+    public int getHeightInInches() {
+        return heightInInches;
+    }
+
+    public void setHeightInInches(int heightInInches) {
+        this.heightInInches = heightInInches;
+    }
+
     public void setGender(Gender gender) {
         this.gender = gender;
     }
@@ -102,14 +120,6 @@ public class UserAccount implements Serializable {
 
     public void setWeight(int weight) {
         this.weight = weight;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
     }
 
     public boolean isHasHyperTension() {

@@ -39,7 +39,7 @@ public class UserDailyUpdate implements Serializable {
     private AlertColour colourStatus;
 
     @Column(name = "HB1AC_value")
-    private int HB1ACvalue;
+    private int hb1ACvalue;
 
     @Column(name = "record_date", nullable = false)
     private LocalDate recordDate;
@@ -49,7 +49,7 @@ public class UserDailyUpdate implements Serializable {
     @CreatedDate
     private Date creationDate;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = true)
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updateDate;
@@ -91,11 +91,11 @@ public class UserDailyUpdate implements Serializable {
     }
 
     public int getHB1ACvalue() {
-        return HB1ACvalue;
+        return hb1ACvalue;
     }
 
     public void setHB1ACvalue(int HB1ACvalue) {
-        this.HB1ACvalue = HB1ACvalue;
+        this.hb1ACvalue = HB1ACvalue;
     }
 
     public Date getCreationDate() {

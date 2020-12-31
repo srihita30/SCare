@@ -14,11 +14,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import static com.sugar.care.constants.SecurityConstants.JWT_TOKEN_HEADER;
+import static com.sugar.care.constants.SecurityConstants.TOKEN_PREFIX;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -32,6 +36,10 @@ public class UserResourcesController {
     private AuthenticationManager authenticationManager;
 
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private HttpServletRequest request;
+
 
     @Autowired
     public UserResourcesController(AuthenticationManager authenticationManager, UserService userService, JwtTokenProvider jwtTokenProvider) {
@@ -72,6 +80,22 @@ public class UserResourcesController {
         CustomUserDetails userPrincipal = new CustomUserDetails(loginUser);
         HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
         return new ResponseEntity<>(loginUser, jwtHeader, OK);
+    }
+
+    @PostMapping(value = "/authenticate")
+    public ResponseEntity<Object> authenticate(){
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_PREFIX)) {
+            return ResponseEntity.status(NOT_ACCEPTABLE).build();
+        }
+        String token = authorizationHeader.substring(TOKEN_PREFIX.length());
+        boolean expired = jwtTokenProvider.isTokenExpired(token);
+        if(expired){
+            return ResponseEntity.status(NOT_ACCEPTABLE).build();
+        }
+        User userOptional = userService.findByPhoneNumber(jwtTokenProvider.getSubject(token));
+
+        return ResponseEntity.ok(userOptional);
     }
 
     @PutMapping(value = "/users/{id}")

@@ -53,8 +53,8 @@ public class UserDailyUpdateResourceController {
 
     //get last n days record
     @GetMapping(value = "/user/{user_id}/for-days/{number_of_days}")
-    public ResponseEntity<List<UserDailyUpdate>> getLastNDaysRecords(@PathVariable long user_id, @PathVariable int number_of_days) {
-        List<UserDailyUpdate> records = updateService.getUpdatesByUserId(user_id, number_of_days);
+    public ResponseEntity<List<DailyUpdatesService.DailyUpdateResponse>> getLastNDaysRecords(@PathVariable long user_id, @PathVariable int number_of_days) {
+        List<DailyUpdatesService.DailyUpdateResponse> records = updateService.getUpdatesByUserId(user_id, number_of_days);
         return ResponseEntity.ok(records);
     }
 }

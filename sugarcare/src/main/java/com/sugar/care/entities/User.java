@@ -56,7 +56,7 @@ public class User implements Serializable {
     @CreatedDate
     private Date creationDate;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = true)
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updateDate;

@@ -47,7 +47,7 @@ public class JwtTokenProvider {
 
     public boolean isTokenValid(String username, String token) {
         JWTVerifier verifier = getJWTVerifier();
-        return StringUtils.isNotEmpty(username) && !isTokenExpired(verifier, token);
+        return StringUtils.isNotEmpty(username) && !isTokenExpired(token);
     }
 
     public String getSubject(String token) {
@@ -66,7 +66,8 @@ public class JwtTokenProvider {
         return verifier;
     }
 
-    private boolean isTokenExpired(JWTVerifier verifier, String token) {
+    public boolean isTokenExpired(String token) {
+        JWTVerifier verifier = getJWTVerifier();
         Date expiration = verifier.verify(token).getExpiresAt();
         return expiration.before(new Date());
     }
@@ -88,10 +89,4 @@ public class JwtTokenProvider {
         String[] claims = getClaimsFromToken(token);
         return stream(claims).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }*/
-
-
-
-
-
-
 }

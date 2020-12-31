@@ -16,9 +16,9 @@ public interface DailyUpdatesRepository extends JpaRepository<UserDailyUpdate, L
     @Query(value = "SELECT updates FROM UserDailyUpdate updates WHERE updates.user.id =?1 AND updates.recordDate BETWEEN ?2 AND ?3")
     List<UserDailyUpdate> getRecordsForDateRange(long user_id, LocalDate start_date, LocalDate end_date, Pageable pageable);
 
-    @Query(value = "SELECT CASE WHEN (count(record) > 0) THEN true ELSE false END FROM UserDailyUpdate record where record.user.id =?1 AND record.recordDate =?2")
-    Boolean existsByRecordDate(long user_id, LocalDate record_date);
+    @Query(value = "SELECT CASE WHEN (count(record) > 0) THEN true ELSE false END FROM UserDailyUpdate record where record.user.id =?1 AND record.recordDate =?2 AND record.isReadingTakenAfterMeal =?3")
+    Boolean existsByRecordDate(long user_id, LocalDate record_date, boolean afterFood);
 
-    @Query(value = "SELECT record FROM UserDailyUpdate record where record.user.id =?1 AND record.recordDate =?2")
-    List<UserDailyUpdate> getRecordByRecordDate(long user_id, LocalDate record_date);
+    @Query(value = "SELECT record FROM UserDailyUpdate record where record.user.id =?1 AND record.recordDate =?2 AND record.isReadingTakenAfterMeal =?3")
+    List<UserDailyUpdate> getRecordByRecordDate(long user_id, LocalDate record_date, boolean afterFood);
 }

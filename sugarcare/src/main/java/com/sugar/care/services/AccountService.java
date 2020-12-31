@@ -55,7 +55,8 @@ public class AccountService {
         return accountRepo.findById(userId).map(accountUpdated -> {
             accountUpdated.setAge(account.getAge());
             accountUpdated.setGender(account.getGender());
-            accountUpdated.setHeight(account.getHeight());
+            accountUpdated.setHeightInFeet(account.getHeightInFeet());
+            accountUpdated.setHeightInInches(account.getHeightInInches());
             accountUpdated.setWeight(account.getWeight());
             accountUpdated.setHasHyperTension(account.isHasHyperTension());
             accountUpdated.setCardiacPatient(account.isCardiacPatient());

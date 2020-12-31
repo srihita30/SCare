@@ -14,9 +14,9 @@ public class CustomUserDetails implements UserDetails {
     private String password;
 
 
-    public CustomUserDetails(){
+   /* public CustomUserDetails(){
 
-    }
+    }*/
 
     public CustomUserDetails(User user){
         this.phoneNumber = user.getPhoneNumber();
